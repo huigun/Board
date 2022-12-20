@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+<title>회원 가입</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="/index">질문-답변 공개게시판</a>	    
+	    <div class="collapse navbar-collapse">
+	    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	    	<li class="nav-item">	    		    		
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+                <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
+	    	</li>
+	    	<li class="nav-item">
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/join}">회원가입</a>
+	    	</li>
+	    </ul>
+	    </div>
+	  </div>
+	 </nav> 
+	 
+	 <div class="container">
+		<h5 class="my-3 border-bottom pb-2">회원 가입</h5>
+		<form th:action="@{/joinOk}" method="post" th:object="${memberForm}">
+			<div>
+				<div class="alert alert-danger" th:if="${#fields.hasAnyErrors()}">
+					<div th:each="err:${#fields.allErrors()}" th:text="${err}"></div>
+				</div>
+			</div>		
+			<div>
+				<label class="form-label">사용자ID</label>
+				<input type="text" name="username" class="form-control" th:field="*{username}">
+			</div>
+			<div>
+				<label class="form-label">비밀번호</label>
+				<input type="password" name="password" class="form-control" th:field="*{password}">
+			</div>
+			<div>
+				<label class="form-label">이메일</label>
+				<input type="text" name="email" class="form-control" th:field="*{email}">
+			</div>
+			<input type="submit" value="회원가입" class="btn btn-primary my-2">
+		</form>	
+	</div>	
+
+</body>
+</html>

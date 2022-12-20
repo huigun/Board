@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+<title>질문-답변 게시판</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="/index">질문-답변 공개게시판</a>	    
+	    <div class="collapse navbar-collapse">
+	    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	    	<li class="nav-item">	    		    		
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+                <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
+	    	</li>
+	    	<li class="nav-item">
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/join}">회원가입</a>
+	    	</li>
+	    </ul>
+	    </div>
+	  </div>
+	 </nav> 
+<div layout:fragment="content" class="container my-3">
+	<table class="table">
+		<thead class="table-info">
+		<tr>
+			<th>번호</th>
+			<th>제목</th>
+			<th>글쓴이</th>
+			<th>등록일</th>
+		</tr>
+		</thead>
+		<tr th:each="question:${paging}" >
+			<td th:text="${question.id}"></td>
+			<td>
+				<a th:href="@{|/questionView/${question.id}|}" th:text="${question.subject}"></a>
+				<span class="small ms-2" th:if="${#lists.size(question.answerList) > 0}"
+				th:text="'('+${#lists.size(question.answerList)}+')'">
+					
+				</span>
+			</td>
+			<td>
+				<span th:text="${question.writer.username}"></span>
+			</td>
+			<td th:text="${#temporals.format(question.createDate,'yyyy-MM-dd HH:mm')}"></td>
+		</tr>
+	</table>
+	<!-- 페이징 시작 -->
+		<div th:if="${!paging.isEmpty()}">
+			<ul class="pagination justify-content-center">
+				<li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'" >
+					<a class="page-link" th:href="@{|?page=${paging.number-1}|}"><span>이전</span></a>
+				</li>
+				<li class="page-item" th:each="page:${#numbers.sequence(0, paging.totalPages-1)}" 
+				th:if="${page >= paging.number-3 and page <= paging.number+3 }"
+				th:classappend="${page==paging.number} ? 'active'">
+					<a class="page-link" th:href="@{|?page=${page}|}" th:text="${page+1}"></a>
+				</li>
+				<li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+					<a class="page-link" th:href="@{|?page=${paging.number+1}|}"><span>다음</span></a>
+				</li>
+			</ul>
+		</div>
+	<!-- 페이징 끝 -->
+	
+	<a th:href="@{/questionCreate}" class="btn btn-primary my-2">질문등록</a>
+	
+</div>
+</body>
+</html>

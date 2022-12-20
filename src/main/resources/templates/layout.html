@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8">
+<title># 질문/답변 게시판 #</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<!-- As a link -->
+	<nav class="navbar bg-light">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="/index">GYOJIN Q&A BOARD</a>
+	  </div>
+	  <div>로그인</div>
+	</nav>
+	
+	<th:block layout:fragment="content"></th:block>
+</body>
+</html>

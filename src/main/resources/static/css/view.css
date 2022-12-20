@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+textarea#content {
+	
+	width:100%;
+	border-color: red;
+	border-width: 3px;
+	
+}

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="UTF-8">
+<title>질문 내용 보기</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+	  <div class="container-fluid">
+	    <a class="navbar-brand" href="/index">질문-답변 공개게시판</a>	    
+	    <div class="collapse navbar-collapse">
+	    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	    	<li class="nav-item">	    		    		
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+                <a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/logout}">로그아웃</a>
+	    	</li>
+	    	<li class="nav-item">
+	    		<a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/join}">회원가입</a>
+	    	</li>
+	    </ul>
+	    </div>
+	  </div>
+	 </nav> 
+<div class="container my-3">
+	<!-- 질문 내용 보기 -->	
+	<!-- 
+	<h2 class="border-bottom py-2" th:text="${question.subject}"></h2>
+	<div class="card my-3">
+		<div class="card-body">
+			<div class="card-text" style="white-space:pre-line;" th:text="${question.content}"></div>			
+			<div class="d-flex justify-content-end">
+				<div class="badge bg-light text-info">
+					<div th:text="${#temporals.format(question.createDate,'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	 -->
+	<div class="card border-info mb-3">
+  	<div class="card-header" th:text="${question.subject}">Header</div>
+  	<div class="card-body">
+    	<h5 class="card-title" th:text="${question.content}">Info card title</h5>
+    	<div class="d-flex justify-content-end">
+    			<div th:if="${question.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+	                <div class="mb-2">수정한 시간 : </div>
+	                <div th:text="${#temporals.format(question.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+            	</div>
+    	    		  			
+				<div class="badge bg-light text-info">
+					<div th:text="'질문자 : '+${question.writer.username}"></div>  					
+					<div th:text="${#temporals.format(question.createDate,'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+		</div>
+		<div class="my-3">
+			<a th:href="@{|/modify/${question.id}|}" sec:authorize="isAuthenticated()" th:if="${question.writer != null and #authentication.getPrincipal().getUsername() == question.writer.username}" th:text="수정" class="btn btn-primary my-2"></a>
+			<a th:href="@{|/delete/${question.id}|}" sec:authorize="isAuthenticated()" th:if="${question.writer != null and #authentication.getPrincipal().getUsername() == question.writer.username}" th:text="삭제" class="btn btn-primary my-2"></a>
+			<a th:href="@{|/questionLike/${question.id}|}"class="btn btn-primary my-2">
+            좋아요 <span class="badge text-bg-secondary" th:text="${#lists.size(question.liker)}">4</span>
+         </a>
+		</div>		
+  	</div>
+</div>
+	<!-- 질문 내용 끝 -->
+	<!-- 답변 개수 출력 -->
+		<h5 class="border-bottom my-3 py-2" th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+	<!-- 답변 개수 출력 끝 -->
+	
+	<!-- 답변 내용 반복 시작 -->
+	<div class="card my-3 p-2" th:each="answer : ${question.answerList}">			
+		<div class="card-text" th:text="${answer.content}"></div>
+		<div class="d-flex justify-content-end">
+				<div th:if="${answer.modifyDate != null}" class="badge bg-light text-dark p-2 text-start mx-3">
+	                <div class="mb-2">수정한 시간 : </div>
+	                <div th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd HH:mm')}"></div>
+            	</div>
+				<div class="badge bg-light text-info">
+					<div th:text="'답변자 : '+${answer.writer.username}"></div>
+					<div th:text="${#temporals.format(answer.createTime,'yyyy-MM-dd HH:mm')}"></div>
+				</div>
+		</div>
+		<div class="my-3">
+			<a th:href="@{|/answerModify/${answer.id}|}" sec:authorize="isAuthenticated()" th:if="${answer.writer != null and #authentication.getPrincipal().getUsername() == answer.writer.username}" th:text="수정" class="btn btn-primary my-2"></a>
+			<a th:href="@{|/answerDelete/${answer.id}|}" sec:authorize="isAuthenticated()" th:if="${answer.writer != null and #authentication.getPrincipal().getUsername() == answer.writer.username}" th:text="삭제" class="btn btn-primary my-2"></a>
+			<a th:href="@{|/answerLike/${answer.id},${question.id}|}"class="btn btn-primary my-2">
+            좋아요 <span class="badge text-bg-secondary" th:text="${#lists.size(answer.liker)}">4</span>
+         </a>
+		</div>
+		
+	</div>		
+	<!-- 답변 내용 반복 끝 -->
+	<!-- 답변 내용 작성 -->
+	<!-- 답변 검사 에러 표시 -->
+	<form th:action="@{|/answerCreate/${question.id}|}" method="post" class="my-3" th:object="${answerForm}">
+	<div>
+		<div class="alert alert-danger" th:if="${#fields.hasAnyErrors()}">
+			<div th:each="err:${#fields.allErrors()}" th:text="${err}"></div>
+		</div>
+	</div>	
+	<!-- 답변 검사 에러 표시 끝 -->
+	
+		<textarea rows="10" cols="60" name="content" id="content" class="form-control" th:field="*{content}"></textarea><br>
+		<input type="submit" value="답변등록" id="answer_submit" class="btn btn-primary my-2">
+	</form>
+	<!-- 답변 내용 작성 끝 -->
+</div>
+</body>
+</html>
